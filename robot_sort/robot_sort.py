@@ -6,7 +6,7 @@ class SortingRobot:
         self._list = l          # The list the robot is tasked with sorting
         self._item = None       # The item the robot is holding
         self._position = 0      # The list position the robot is at
-        self._light = "OFF"     # The state of the robot's light
+        self._light = "ON"     # The state of the robot's light
         self._time = 0          # A time counter (stretch)
 
     def can_move_right(self):
@@ -96,16 +96,59 @@ class SortingRobot:
         """
         Sort the robot's list.
         """
-        # Fill this out
-        pass
+        available_move = self.can_move_right()
+         
+        while self.light_is_on() == True:
+            # turn off light - to be turned on in case of swap
+            self.set_light_off()
+
+            while available_move == True:
+                # if not holding item - pick up item
+                if self._item == None:
+                    self.swap_item()
+                # if robot can move right, do so
+                self.move_right()
+                # if held item is greater than item at current position
+                # turn on light and swap
+                # put the lesser item at the previous position and return
+                # pick up new item
+                if self.compare_item() == 1:
+                    self.set_light_on()
+                    self.swap_item()
+                    self.move_left()
+                    self.swap_item()
+                    self.move_right()
+                    self.swap_item()
+                # if held item is less than held item
+                # or if the current and held items are equal
+                # return the held item to it's original position
+                # and pick up a new item
+                elif self.compare_item() == -1 or self.compare_item() == 0:
+                    self.move_left()
+                    self.swap_item()
+                    self.move_right()
+                    self.swap_item()
+                # check to make sure we are not at the end of the list
+                available_move = self.can_move_right()
+                if available_move == False:
+                    self.swap_item()
+            # if we are at the end of the list
+            # return to the beginning
+            reset = self.can_move_left()
+            while reset == True:
+                self.move_left()
+                reset = self.can_move_left()
+            available_move = self.can_move_right()
+                
+        return self._list
 
 
 if __name__ == "__main__":
     # Test our your implementation from the command line
     # with `python robot_sort.py`
 
-    l = [15, 41, 58, 49, 26, 4, 28, 8, 61, 60, 65, 21, 78, 14, 35, 90, 54, 5, 0, 87, 82, 96, 43, 92, 62, 97, 69, 94, 99, 93, 76, 47, 2, 88, 51, 40, 95, 6, 23, 81, 30, 19, 25, 91, 18, 68, 71, 9, 66, 1, 45, 33, 3, 72, 16, 85, 27, 59, 64, 39, 32, 24, 38, 84, 44, 80, 11, 73, 42, 20, 10, 29, 22, 98, 17, 48, 52, 67, 53, 74, 77, 37, 63, 31, 7, 75, 36, 89, 70, 34, 79, 83, 13, 57, 86, 12, 56, 50, 55, 46]
-
+    # l = [15, 41, 58, 49, 26, 4, 28, 8, 61, 60, 65, 21, 78, 14, 35, 90, 54, 5, 0, 87, 82, 96, 43, 92, 62, 97, 69, 94, 99, 93, 76, 47, 2, 88, 51, 40, 95, 6, 23, 81, 30, 19, 25, 91, 18, 68, 71, 9, 66, 1, 45, 33, 3, 72, 16, 85, 27, 59, 64, 39, 32, 24, 38, 84, 44, 80, 11, 73, 42, 20, 10, 29, 22, 98, 17, 48, 52, 67, 53, 74, 77, 37, 63, 31, 7, 75, 36, 89, 70, 34, 79, 83, 13, 57, 86, 12, 56, 50, 55, 46]
+    l = [41, 15, 58, 49, 26]
     robot = SortingRobot(l)
 
     robot.sort()
